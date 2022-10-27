@@ -628,7 +628,7 @@ impl<T> Drop for LocalReceiver<T> {
     }
 }
 
-struct ChannelStream<'a, T> {
+pub struct ChannelStream<'a, T> {
     channel: &'a LocalChannel<T>,
     //if do not use Box stream becomes !Unpin which will force users to pin it
     //while using StreamExt which is not user friendly. Creation of stream is relatively
