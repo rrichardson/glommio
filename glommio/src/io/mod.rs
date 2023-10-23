@@ -121,6 +121,8 @@ macro_rules! enhanced_try {
     }};
 }
 
+mod async_write_rent;
+mod async_write_rent_ext;
 mod buffered_file;
 mod buffered_file_stream;
 mod bulk_io;
@@ -133,10 +135,23 @@ mod open_options;
 mod read_result;
 mod sched;
 mod stat;
-
 use std::path::Path;
 
+pub use async_write_rent::{AsyncWriteRent, AsyncWriteRentAt};
+
 pub(super) type Result<T> = crate::Result<T, ()>;
+
+/// A specialized `Result` type for `io-uring` operations with buffers.
+///
+/// This type is used as a return value for asynchronous `io-uring` "Rent"
+/// trait methods that require passing ownership of a buffer to the runtime.
+/// When the operation completes, the buffer is returned whether or not the
+/// operation completed successfully.
+///
+pub type BufResult<T> = (std::io::Result<T>, crate::buf::IouBuf);
+
+/// Same as BufResult, but for writev type operations
+pub type BufVecResult<T> = (std::io::Result<T>, crate::buf::IouBufVec);
 
 /// rename an existing file.
 pub async fn rename<P: AsRef<Path>, Q: AsRef<Path>>(old_path: P, new_path: Q) -> Result<()> {

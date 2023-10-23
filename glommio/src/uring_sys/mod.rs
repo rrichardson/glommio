@@ -284,6 +284,15 @@ pub struct __kernel_timespec {
     pub tv_nsec: libc::c_longlong,
 }
 
+#[repr(C)]
+pub struct io_uring_buf_reg {
+    ring_addr: libc::__u64,
+    ring_entries: libc::__u32,
+    bgid: libc::__u16,
+    pad: libc::__u16,
+    resv: [libc::__u64; 3],
+}
+
 #[link(name = "uring")]
 extern "C" {
     pub fn io_uring_queue_init(
@@ -485,6 +494,31 @@ extern "C" {
     #[link_name = "rust_io_uring_prep_poll_remove"]
     pub fn io_uring_prep_poll_remove(sqe: *mut io_uring_sqe, user_data: *mut libc::c_void);
 
+    #[link_name = "rust_io_uring_prep_recv_multishot"]
+    pub fn io_uring_prep_recv_multishot(
+        sqe: *mut io_uring_sqe,
+        sockfd: libc::c_int,
+        buf: *mut libc::c_void,
+        len: libc::size_t,
+        flags: libc::c_int,
+    );
+
+    #[link_name = "rust_io_uring_prep_multishot_accept_direct"]
+    pub fn io_uring_prep_multishot_accept_direct(
+        sqe: *mut io_uring_sqe,
+        sockfd: libc::c_int,
+        addr: *mut libc::sockaddr,
+        addrlen: *mut libc::socklen_t,
+        flags: libc::c_int,
+    );
+
+    #[link_name = "rust_io_uring_prep_poll_multishot"]
+    pub fn io_uring_prep_poll_multishot(
+        sqe: *mut io_uring_sqe,
+        fd: libc::c_int,
+        poll_mask: libc::c_uint,
+    );
+
     #[link_name = "rust_io_uring_prep_fsync"]
     pub fn io_uring_prep_fsync(sqe: *mut io_uring_sqe, fd: libc::c_int, fsync_flags: libc::c_uint);
 
@@ -655,6 +689,32 @@ extern "C" {
         bgid: libc::c_int,
         bid: libc::c_int,
     );
+
+    #[link_name = "rust_io_uring_register_files_sparse"]
+    pub fn io_uring_register_files_sparse(ring: *mut io_uring, nr_files: libc::c_uint);
+
+    #[link_name = "rust_io_uring_register_buf_ring"]
+    pub fn io_uring_register_buf_ring(
+        ring: *mut io_uring,
+        reg: *const io_uring_buf_reg,
+        flags: libc::c_int,
+    ) -> libc::c_int;
+
+    #[link_name = "rust_io_uring_buf_ring_mask"]
+    pub fn io_uring_buf_ring_mask(count: libc::__u32) -> libc::c_int;
+
+    #[link_name = "rust_io_uring_buf_ring_add"]
+    pub fn io_uring_buf_ring_add(
+        ring: *mut io_uring,
+        addr: *mut libc::c_void,
+        len: libc::c_uint,
+        bid: libc::c_uint,
+        mask: libc::c_int,
+        buf_offset: libc::c_int,
+    );
+
+    #[link_name = "rust_io_uring_buf_ring_advance"]
+    pub fn io_uring_buf_ring_advance(ring: *mut io_uring, count: libc::c_int) -> libc::c_int;
 
     #[link_name = "rust_io_uring_prep_remove_buffers"]
     pub fn io_uring_prep_remove_buffers(sqe: *mut io_uring_sqe, nr: libc::c_int, bgid: libc::c_int);

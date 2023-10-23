@@ -1266,15 +1266,15 @@ pub(crate) mod test {
         assert_eq!(r, 512);
 
         let stat = reader.stat().await.unwrap();
-        assert_eq!(stat.file_size, (cluster_size * 2 + 512).try_into().unwrap());
-        assert_eq!(stat.allocated_file_size, (cluster_size).try_into().unwrap());
+        assert_eq!(stat.file_size, (cluster_size * 2 + 512) as u64);
+        assert_eq!(stat.allocated_file_size, (cluster_size) as u64);
         assert_eq!(stat.fs_cluster_size, cluster_size);
 
         let rb = reader
-            .read_at_aligned(0, (cluster_size * 2).try_into().unwrap())
+            .read_at_aligned(0, (cluster_size * 2) as usize)
             .await
             .unwrap();
-        assert_eq!(rb.len(), (cluster_size * 2).try_into().unwrap());
+        assert_eq!(rb.len(), (cluster_size * 2) as usize);
         for i in rb.iter() {
             assert_eq!(*i, 0);
         }
@@ -1296,11 +1296,8 @@ pub(crate) mod test {
         assert_eq!(r, 512);
 
         let stat = reader.stat().await.unwrap();
-        assert_eq!(stat.file_size, (cluster_size * 2 + 512).try_into().unwrap());
-        assert_eq!(
-            stat.allocated_file_size,
-            (cluster_size * 2).try_into().unwrap()
-        );
+        assert_eq!(stat.file_size, (cluster_size * 2 + 512) as u64);
+        assert_eq!(stat.allocated_file_size, (cluster_size * 2) as u64);
         assert_eq!(stat.fs_cluster_size, cluster_size);
 
         let rb = reader.read_at_aligned(0, 512).await.unwrap();
@@ -1319,7 +1316,7 @@ pub(crate) mod test {
             .read_at_aligned(1024, (cluster_size * 2 - 1024).try_into().unwrap())
             .await
             .unwrap();
-        assert_eq!(rb.len(), (cluster_size * 2 - 1024).try_into().unwrap());
+        assert_eq!(rb.len(), (cluster_size * 2 - 1024) as usize);
         for i in rb.iter() {
             assert_eq!(*i, 0);
         }
@@ -1334,9 +1331,9 @@ pub(crate) mod test {
             .unwrap();
         let stat = reader.stat().await.unwrap();
         // File size remains unchanged.
-        assert_eq!(stat.file_size, (cluster_size * 2 + 512).try_into().unwrap());
+        assert_eq!(stat.file_size, (cluster_size * 2 + 512) as u64);
         // Only one allocated cluster remains.
-        assert_eq!(stat.allocated_file_size, cluster_size.try_into().unwrap());
+        assert_eq!(stat.allocated_file_size, cluster_size as u64);
 
         // Deallocated range now returns 0s.
         let rb = reader

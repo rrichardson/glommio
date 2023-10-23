@@ -258,6 +258,11 @@
 //!     std::io::Result::Ok(())
 //! });
 //! ```
+#![feature(type_alias_impl_trait)]
+#![feature(impl_trait_in_assoc_type)]
+#![feature(alloc_layout_extra)]
+#![feature(slice_ptr_get)]
+#![feature(ptr_sub_ptr)]
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 #![cfg_attr(doc, deny(rustdoc::broken_intra_doc_links))]
 #![cfg_attr(feature = "native-tls", feature(thread_local))]
@@ -427,6 +432,7 @@ macro_rules! make_shared_var_mut {
     }
 }
 
+pub mod buf;
 mod byte_slice_ext;
 pub mod channels;
 pub mod controllers;

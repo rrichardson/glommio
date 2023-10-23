@@ -151,7 +151,7 @@ impl Timers {
 /// There is only one global instance of this type, accessible by
 /// [`Local::get_reactor()`].
 pub(crate) struct Reactor {
-    /// Raw bindings to `epoll`/`kqueue`/`wepoll`.
+    /// Raw binding to the io_uring Reactor
     pub(crate) sys: sys::Reactor,
 
     timers: RefCell<Timers>,
